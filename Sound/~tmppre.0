@@ -1,0 +1,173 @@
+#file "sound.asm"
+#line 1
+.org 4000h
+#line 2
+.rom
+#line 3
+.bios
+#line 4
+.start MAIN
+#line 6
+MAIN:
+#line 7
+CALL INIT32
+#line 8
+LD HL, STR_HELLO
+#line 9
+LD DE, 1800h
+#line 10
+LD BC, 12
+#line 11
+CALL LDIRVM
+#line 13
+CALL START_PSG_A
+#line 14
+LD HL, SONG_1
+#line 15
+CALL PLAY_PSG_A
+#line 16
+CALL STOP_PSG_A
+#line 18
+END:
+#line 19
+JR END
+#line 23
+PLAY_PSG_A:
+#line 24
+LD A, [HL]
+#line 25
+CP 'C'
+#line 26
+JR Z, @@PLAY_C
+#line 27
+CP 'D'
+#line 28
+JR Z, @@PLAY_D
+#line 29
+CP 'E'
+#line 30
+JR Z, @@PLAY_E
+#line 31
+JP @@PLAY_UNDEFINED
+#line 32
+@@PLAY_C:
+#line 33
+LD BC, 0100h
+#line 34
+JP @@PLAY_OK
+#line 35
+@@PLAY_D:
+#line 36
+LD BC, 0200h
+#line 37
+JP @@PLAY_OK
+#line 38
+@@PLAY_E:
+#line 39
+LD BC, 0300h
+#line 40
+JP @@PLAY_OK
+#line 41
+@@PLAY_UNDEFINED:
+#line 42
+LD BC, 0
+#line 43
+JP @@PLAY_OK
+#line 44
+@@PLAY_OK:
+#line 45
+CALL SET_PSG_FREQ_A
+#line 47
+LD BC, 3000h
+#line 48
+CALL DELAY_SHORT
+#line 50
+INC HL
+#line 51
+XOR A
+#line 52
+AND [HL]
+#line 53
+RET Z
+#line 55
+JR PLAY_PSG_A
+#line 58
+START_PSG_A:
+#line 59
+XOR B
+#line 60
+XOR C
+#line 61
+CALL SET_PSG_FREQ_A
+#line 63
+LD A, 7
+#line 64
+OUT [0A0h], A
+#line 65
+LD A, 10111110b
+#line 66
+OUT [0A1h], A
+#line 68
+LD A, 8
+#line 69
+OUT [0A0h], A
+#line 70
+LD A, 00001011b
+#line 71
+OUT [0A1h], A
+#line 72
+RET
+#line 75
+STOP_PSG_A:
+#line 76
+LD A, 7
+#line 77
+OUT [0A0h], A
+#line 78
+LD A, 10111111b
+#line 79
+OUT [0A1h], A
+#line 80
+RET
+#line 84
+SET_PSG_FREQ_A:
+#line 85
+LD A, 0
+#line 86
+OUT [0A0h], A
+#line 87
+LD A, C 
+#line 88
+OUT [0A1h], A
+#line 89
+LD A, 1
+#line 90
+OUT [0A0h], A
+#line 91
+LD A, B 
+#line 92
+OUT [0A1h], A
+#line 93
+RET
+#line 97
+DELAY_SHORT:
+#line 98
+NOP
+#line 99
+DEC BC
+#line 100
+LD A, B
+#line 101
+OR C
+#line 102
+RET Z
+#line 103
+JR DELAY_SHORT
+#line 105
+STR_HELLO:
+#line 106
+DB "Hello World!"
+#line 108
+SONG_1:
+#line 109
+DB "CDE"
